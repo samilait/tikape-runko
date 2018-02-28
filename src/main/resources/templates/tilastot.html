@@ -2,24 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
     <head>
-        <title>Smoothie annos</title>
+        <title>Raaka-aine tilasto</title>
         <meta charset="utf-8" />
     </head>
 
     <body>
-         <h1><span th:text="${annos.nimi}">annos</span></h1>
+        <h1>Raaka-aine esiintyy annoksissa x kertaa:</h1>
 
         <ol>
-            <li th:each="aines: ${aineet}">
-                <span th:text="${aines.raakaainenimi}">aineksen nimi</span><span> </span><span th:text=" ${aines.maara}">aineksen määrä</span>
+            <li th:each="tilasto: ${tilastot}">
+                <span th:text="${tilasto.nimi}">aineksen nimi</span><span>, </span><span th:text="${tilasto.summa}">lkm</span>
             </li>
         </ol>
-         
+        
+        
         <ul>
             <li>
               <a href="../">Smoothielistaukseen</a>
             </li>
-        </ul> 
-         
+        </ul>
+        
     </body>
 </html>

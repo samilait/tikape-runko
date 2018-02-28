@@ -5,21 +5,19 @@ import spark.ModelAndView;
 import static spark.Spark.*;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
 import tikape.runko.database.Database;
-import tikape.runko.database.OpiskelijaDao;
 import tikape.runko.database.AnnosDao;
 import tikape.runko.database.AnnosRaakaAineDao;
 import tikape.runko.database.RaakaAineDao;
 import tikape.runko.domain.RaakaAine;
 import tikape.runko.domain.Annos;
+import tikape.runko.domain.AnnosRaakaAine;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
         Database database = new Database("jdbc:sqlite:smoothiet.db");
-//        Database database = new Database("jdbc:sqlite:opiskelijat.db");
-        database.init();
+//        database.init();
 
-//        OpiskelijaDao opiskelijaDao = new OpiskelijaDao(database);
         AnnosDao annosDao = new AnnosDao(database);
         RaakaAineDao raakaAineDao = new RaakaAineDao(database);
         AnnosRaakaAineDao annosRaakaAineDao = new AnnosRaakaAineDao(database, annosDao, raakaAineDao);
@@ -62,6 +60,8 @@ public class Main {
         get("/smoothiet", (req, res) -> {
             HashMap map = new HashMap<>();
             map.put("smoothiet", annosDao.findAll());
+            map.put("ainekset", raakaAineDao.findAll());
+
 
             return new ModelAndView(map, "smoothiet");
         }, new ThymeleafTemplateEngine());
@@ -69,24 +69,31 @@ public class Main {
         // Lisää uusi smoothie
         post("/smoothiet", (req, res) -> {
             String nimi = req.queryParams("nimi");
-            annosDao.save(new Annos(null, nimi));
+            if (nimi != null) {
+                annosDao.save(new Annos(null, nimi));
+            } else {
             
+                // Smoothie ja raaka-aine id:t => x.findOne(id) => Luokat annosRaakaAine -oliolle
+                Annos annos = annosDao.findOne(Integer.parseInt(req.queryParams("smoothie")));
+                RaakaAine raakaAine = raakaAineDao.findOne(Integer.parseInt(req.queryParams("raakaAine")));
+                Integer jarjestys = Integer.parseInt(req.queryParams("jarjestys"));
+                String maara = req.queryParams("maara");            
+                String ohje = req.queryParams("ohje");
+
+                AnnosRaakaAine annosRaakaAine = new AnnosRaakaAine(jarjestys, maara, ohje, annos, raakaAine);
+                annosRaakaAineDao.save(annosRaakaAine);
+            }
             res.redirect("/smoothiet");
             return "";
         });
         
-//        get("/opiskelijat", (req, res) -> {
-//            HashMap map = new HashMap<>();
-//            map.put("opiskelijat", opiskelijaDao.findAll());
-//
-//            return new ModelAndView(map, "opiskelijat");
-//        }, new ThymeleafTemplateEngine());
+        // Tilasto raaka-aineittain
+        get("/tilastot", (req, res) -> {
+            HashMap map = new HashMap<>();
+            map.put("tilastot", annosRaakaAineDao.statistics());
 
-//        get("/opiskelijat/:id", (req, res) -> {
-//            HashMap map = new HashMap<>();
-//            map.put("opiskelija", opiskelijaDao.findOne(Integer.parseInt(req.params("id"))));
-//
-//            return new ModelAndView(map, "opiskelija");
-//        }, new ThymeleafTemplateEngine());
+            return new ModelAndView(map, "tilastot");
+        }, new ThymeleafTemplateEngine());
+
     }
 }

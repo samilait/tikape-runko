@@ -41,7 +41,11 @@ public class AnnosRaakaAine {
         return ohje;
     }
 
-    public String getRaakaaine() {
+    public RaakaAine getRaakaaine() {
+        return raakaaine; //.getNimi();
+    }
+
+    public String getRaakaainenimi() {
         return raakaaine.getNimi();
     }
 

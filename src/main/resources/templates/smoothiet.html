@@ -23,5 +23,33 @@
             <input type="submit" value="Lis&auml;&auml;"/>
         </form>
         
+        <h4>Lis&auml;&auml; raaka-aineita</h4>
+        
+        <form method="POST" action="">
+            Smoothien nimi:<br/>
+            <select name="smoothie">
+              <option th:each ="annos: ${smoothiet}"  th:text="${annos.nimi}" th:value="${annos.id}">Smoothie</option>
+            </select>
+            <br/>
+            Lis&auml;tt&auml;v&auml; raaka-aine<br/>
+            <select name="raakaAine">
+              <option th:each ="aines: ${ainekset}"  th:text="${aines.nimi}" th:value="${aines.id}">Raaka-aine</option>
+            </select>
+            <br/>
+            J&auml;rjestys<br/>
+            <input type="text" name="jarjestys"/><br/>
+            M&auml;&auml;r&auml;<br/>
+            <input type="text" name="maara"/><br/>
+            Ohje<br/>
+            <input type="text" name="ohje"/><br/>
+            <input type="submit" value="Lis&auml;&auml;"/>
+        </form>
+        
+        <ul>
+            <li>
+              <a href="../">Smoothielistaukseen</a>
+            </li>
+        </ul> 
+        
     </body>
 </html>
